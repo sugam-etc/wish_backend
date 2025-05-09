@@ -29,8 +29,12 @@ app.use("/api/events", eventRoutes);
 mongoose
   .connect(process.env.MONGO_URI) // MongoDB connection
   .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err);
+    process.exit(1); // Exit if MongoDB connection fails
+  });
 
+// Basic route for health check
 app.get("/", (req, res) => {
   res.send("API is running");
 });
@@ -41,6 +45,18 @@ process.on("SIGTERM", () => {
   process.exit(0); // Exit gracefully
 });
 
+// Handle uncaught exceptions and unhandled rejections
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+  process.exit(1);
+});
+process.on("unhandledRejection", (err) => {
+  console.error("Unhandled Rejection:", err);
+  process.exit(1);
+});
+
 // Start server (use dynamic port from Railway)
 const PORT = process.env.PORT || 5000; // This will use the Railway dynamic port or fallback to 5000
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+});
