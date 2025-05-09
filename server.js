@@ -7,9 +7,12 @@ const path = require("path");
 dotenv.config();
 const app = express();
 
-//CORS
+// CORS
 const corsOptions = {
-  origin: "*", // or specify a list of allowed origins
+  origin:
+    process.env.NODE_ENV === "production"
+      ? "https://yourproductiondomain.com"
+      : "*", // specify your production domain here
 };
 
 // Middleware
@@ -34,11 +37,13 @@ mongoose
 app.get("/", (req, res) => {
   res.send("API is running");
 });
-//Graceful Shutdown
+
+// Graceful Shutdown
 process.on("SIGTERM", () => {
   console.log("SIGTERM received, shutting down gracefully...");
   process.exit(0); // Exit gracefully
 });
-// Start server (IMPORTANT: use Railway dynamic port)
+
+// Start server (use Railway dynamic port)
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
