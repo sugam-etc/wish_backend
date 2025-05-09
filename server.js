@@ -9,10 +9,7 @@ const app = express();
 
 // CORS
 const corsOptions = {
-  origin:
-    process.env.NODE_ENV === "production"
-      ? "https://yourproductiondomain.com"
-      : "*", // specify your production domain here
+  origin: "*", // Allow all origins (can be restricted to specific domains)
 };
 
 // Middleware
@@ -30,7 +27,7 @@ app.use("/api/events", eventRoutes);
 
 // Database connection
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI) // MongoDB connection
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
@@ -44,6 +41,6 @@ process.on("SIGTERM", () => {
   process.exit(0); // Exit gracefully
 });
 
-// Start server (use Railway dynamic port)
-const PORT = process.env.PORT || 5000;
+// Start server (use dynamic port from Railway)
+const PORT = process.env.PORT || 5000; // This will use the Railway dynamic port or fallback to 5000
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
