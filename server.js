@@ -7,8 +7,13 @@ const path = require("path");
 dotenv.config();
 const app = express();
 
+//CORS
+const corsOptions = {
+  origin: "*", // or specify a list of allowed origins
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // Routes
