@@ -8,12 +8,9 @@ dotenv.config();
 const app = express();
 
 // CORS
-const corsOptions = {
-  origin: "*", // Allow all origins (can be restricted to specific domains)
-};
 
 // Middleware
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // Routes
