@@ -7,7 +7,7 @@ const eventSchema = new mongoose.Schema(
     location: { type: String, required: true },
     time: { type: String, required: true },
     description: { type: String, required: true },
-    image: { type: String, required: true }, // URL or filename
+    image: { type: String, required: true }, // Cloudinary URL
     url: { type: String, required: true },
   },
   { timestamps: true }

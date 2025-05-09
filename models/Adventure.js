@@ -1,4 +1,3 @@
-// models/Adventure.js
 const mongoose = require("mongoose");
 
 const contactSchema = new mongoose.Schema(
@@ -21,7 +20,7 @@ const adventureSchema = new mongoose.Schema(
     hours: { type: String, required: true },
     contact: { type: contactSchema, required: true },
     rating: { type: Number, required: true, min: 0, max: 5 },
-    image: { type: String, required: true }, // can be URL or filename
+    image: { type: String, required: true }, // Can be Cloudinary URL
   },
   { timestamps: true }
 );
