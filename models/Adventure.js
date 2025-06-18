@@ -21,6 +21,7 @@ const adventureSchema = new mongoose.Schema(
     contact: { type: contactSchema, required: true },
     rating: { type: Number, required: true, min: 0, max: 5 },
     image: { type: String, required: true }, // Can be Cloudinary URL
+    about: { type: String },
   },
   { timestamps: true }
 );

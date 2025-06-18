@@ -8,7 +8,7 @@ const blogSchema = new mongoose.Schema(
     date: { type: Date, required: true },
     readTime: { type: String, required: true },
     content: { type: String, required: true },
-    images: { type: [String], required: true }, // Array of Cloudinary URLs
+    images: { type: [String], required: true },
   },
   { timestamps: true } // Enable createdAt / updatedAt
 );

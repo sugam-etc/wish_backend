@@ -1,38 +1,27 @@
-// routes/adventureRoutes.js
-
 const express = require("express");
 const router = express.Router();
 const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
+const path = require("path");
+const fs = require("fs");
 const Adventure = require("../models/Adventure");
 
-// Cloudinary Configuration
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
+// Ensure uploads directory exists
+const uploadDir = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
+
+// Multer setup (disk storage)
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, "adventure-" + uniqueSuffix + path.extname(file.originalname));
+  },
 });
-
-// Multer setup (memory storage)
-const storage = multer.memoryStorage();
 const upload = multer({ storage });
-
-// Helper function to upload buffer to Cloudinary
-const uploadToCloudinary = (fileBuffer, folder) => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder },
-      (error, result) => {
-        if (result) {
-          resolve(result);
-        } else {
-          reject(error);
-        }
-      }
-    );
-    stream.end(fileBuffer);
-  });
-};
 
 // ✅ Create new adventure
 router.post("/", upload.single("image"), async (req, res) => {
@@ -46,6 +35,7 @@ router.post("/", upload.single("image"), async (req, res) => {
       priceRange,
       hours,
       contact,
+      about,
       rating,
     } = req.body;
 
@@ -69,18 +59,13 @@ router.post("/", upload.single("image"), async (req, res) => {
     const parsedContact =
       typeof contact === "string" ? JSON.parse(contact) : contact;
 
-    // Upload image to Cloudinary
-    const cloudinaryResponse = await uploadToCloudinary(
-      req.file.buffer,
-      "adventures"
-    );
-
     const adventure = new Adventure({
       name,
       type,
       shortDescription,
       location,
       duration,
+      about,
       priceRange,
       hours,
       contact: {
@@ -89,7 +74,7 @@ router.post("/", upload.single("image"), async (req, res) => {
         website: parsedContact.website,
       },
       rating,
-      image: cloudinaryResponse.secure_url,
+      image: `/uploads/${req.file.filename}`,
     });
 
     const savedAdventure = await adventure.save();
@@ -136,6 +121,7 @@ router.put("/:id", upload.single("image"), async (req, res) => {
       hours,
       contact,
       rating,
+      about,
     } = req.body;
 
     if (
@@ -161,14 +147,17 @@ router.put("/:id", upload.single("image"), async (req, res) => {
     const parsedContact =
       typeof contact === "string" ? JSON.parse(contact) : contact;
 
-    // Upload new image if provided
+    // Handle image update if provided
     let imageUrl = adventure.image;
     if (req.file) {
-      const cloudinaryResponse = await uploadToCloudinary(
-        req.file.buffer,
-        "adventures"
-      );
-      imageUrl = cloudinaryResponse.secure_url;
+      // Delete old image if it exists
+      if (adventure.image) {
+        const oldImagePath = path.join(__dirname, "..", adventure.image);
+        if (fs.existsSync(oldImagePath)) {
+          fs.unlinkSync(oldImagePath);
+        }
+      }
+      imageUrl = `/uploads/${req.file.filename}`;
     }
 
     // Update fields
@@ -182,6 +171,7 @@ router.put("/:id", upload.single("image"), async (req, res) => {
     adventure.contact = parsedContact;
     adventure.rating = rating;
     adventure.image = imageUrl;
+    adventure.about = about;
 
     const updatedAdventure = await adventure.save();
     res.status(200).json(updatedAdventure);
@@ -198,6 +188,15 @@ router.delete("/:id", async (req, res) => {
     if (!adventure) {
       return res.status(404).json({ error: "Adventure not found" });
     }
+
+    // Delete associated image
+    if (adventure.image) {
+      const imagePath = path.join(__dirname, "..", adventure.image);
+      if (fs.existsSync(imagePath)) {
+        fs.unlinkSync(imagePath);
+      }
+    }
+
     res.status(200).json({ message: "Adventure deleted successfully" });
   } catch (err) {
     res.status(400).json({ error: err.message });

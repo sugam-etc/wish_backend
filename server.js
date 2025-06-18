@@ -12,15 +12,24 @@ const app = express();
 // Middleware
 app.use(cors());
 app.use(express.json());
-
+// Add this line after the middleware section in your server.js
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 // Routes
 const blogRoutes = require("./routes/blogRoutes");
 const adventureRoutes = require("./routes/adventureRoutes");
 const eventRoutes = require("./routes/eventRoutes");
+const albumRoutes = require("./routes/albumRoutes");
+const authRoutes = require("./routes/authRoutes"); // Import authentication routes
+const infoRoutes = require("./routes/infoRoutes.js");
+const emailRoutes = require("./routes/emailRoutes.js");
 
 app.use("/api/blogs", blogRoutes);
 app.use("/api/adventures", adventureRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/albums", albumRoutes);
+app.use("/api/auth", authRoutes);
+app.use("/api/infos", infoRoutes);
+app.use("/api/email", emailRoutes);
 
 // Database connection
 mongoose
