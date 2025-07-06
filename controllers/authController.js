@@ -1,6 +1,6 @@
 // backend/controllers/authController.js
 
-const User = require("../models/User"); // Import the User model
+const Admin = require("../models/Admin"); // Import the Admin model
 const jwt = require("jsonwebtoken"); // Import jsonwebtoken for creating tokens
 
 // Function to generate a JWT token
@@ -27,7 +27,7 @@ const adminLogin = async (req, res) => {
 
   try {
     // Find the user by username in the database
-    const user = await User.findOne({ username });
+    const user = await Admin.findOne({ username });
 
     // Check if the user exists and if their role is 'admin'
     // This ensures only admin users can log in via this route
@@ -64,22 +64,23 @@ const adminLogin = async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 };
-// // TEMPORARY ROUTE - REMOVE AFTER CREATING ADMIN
-// const createAdmin = async (req, res) => {
-//   const { username, password } = req.body;
+// TEMPORARY ROUTE - REMOVE AFTER CREATING ADMIN
+const createAdmin = async (req, res) => {
+  const { username, password } = req.body;
 
-//   try {
-//     const user = new User({ username, password });
-//     await user.save();
-//     res.status(201).json({ message: "Admin user created" });
-//   } catch (error) {
-//     res.status(500).json({ message: "Error creating admin" });
-//   }
-// };
+  try {
+    const user = new Admin({ username, password });
+    await user.save();
+    res.status(201).json({ message: "Admin user created" });
+  } catch (error) {
+    res.status(500).json({ message: "Error creating admin" });
+  }
+};
 
 // Then add to module.exports:
 module.exports = {
   adminLogin,
+  createAdmin,
 };
 // You can add other admin-related controllers here if needed,
 // for example, creating new admin users (after securing this route).

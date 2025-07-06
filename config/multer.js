@@ -53,6 +53,20 @@ module.exports = {
     { name: "albumImages", maxCount: 100 }, // Max 100 album images
   ]),
 
+  //For Store Item
+  itemUpload: multer({
+    storage: storage,
+    fieldname: "store",
+    fileFilter: imageFileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  }).single("image"),
+
+  purchaseUpload: multer({
+    storage: storage,
+    fileFilter: imageFileFilter,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
+  }).single("paymentProof"),
+
   // Error handler middleware
   multerErrorHandler: (err, req, res, next) => {
     if (err instanceof multer.MulterError) {

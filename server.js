@@ -19,17 +19,25 @@ const blogRoutes = require("./routes/blogRoutes");
 const adventureRoutes = require("./routes/adventureRoutes");
 const eventRoutes = require("./routes/eventRoutes");
 const albumRoutes = require("./routes/albumRoutes");
-const authRoutes = require("./routes/authRoutes"); // Import authentication routes
+// const authRoutes = require("./routes/authRoutes"); // Import authentication routes
 const infoRoutes = require("./routes/infoRoutes.js");
 const emailRoutes = require("./routes/emailRoutes.js");
+const userRoutes = require("./routes/userRoutes.js");
+const itemRoutes = require("./routes/itemRoutes.js");
+const membershipRoutes = require("./routes/membershipRoutes.js");
+const purchaseRoutes = require("./routes/purchaseRoutes");
 
 app.use("/api/blogs", blogRoutes);
 app.use("/api/adventures", adventureRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/albums", albumRoutes);
-app.use("/api/auth", authRoutes);
+// app.use("/api/auth", authRoutes);
 app.use("/api/infos", infoRoutes);
 app.use("/api/email", emailRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/items", itemRoutes);
+app.use("/api/membership", membershipRoutes);
+app.use("/api/purchases", purchaseRoutes);
 
 // Database connection
 mongoose
